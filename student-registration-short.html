@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Registration</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #eef2f7; }
+  header, footer { background: #1f3a5f; color: #fff; text-align: center; padding: 14px; }
+  nav { display: flex; justify-content: center; gap: 20px; background: #2c5282; padding: 8px; }
+  nav a { color: #fff; text-decoration: none; }
+  main { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 1000px; margin: 20px auto; padding: 0 12px; }
+  section { background: #fff; padding: 18px; border-radius: 8px; }
+  form { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .box { display: flex; flex-direction: column; }
+  label, legend { font-weight: bold; margin-bottom: 4px; }
+  input, select { padding: 8px; border: 1px solid #999; border-radius: 4px; }
+  .radios { display: flex; gap: 15px; flex-wrap: wrap; }
+  .radios label { font-weight: normal; }
+  .error { color: #c00; font-size: 13px; min-height: 16px; }
+  button { padding: 10px; background: #2c5282; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+  th { background: #2c5282; color: #fff; }
+  .scroll { overflow-x: auto; }
+  @media (min-width: 600px) { form { grid-template-columns: 1fr 1fr; } button { grid-column: 1 / -1; } }
+  @media (min-width: 992px) { main { grid-template-columns: 1fr 1.2fr; align-items: start; } }
+</style>
+</head>
+<body>
+
+<header><h2>Student Registration</h2></header>
+<nav><a href="#reg">Register</a><a href="#records">Records</a></nav>
+
+<main>
+  <section id="reg">
+    <form id="f" novalidate>
+      <div class="box"><label for="name">Full Name</label>
+        <input id="name" type="text"><span class="error" id="e_name"></span></div>
+
+      <div class="box"><label for="email">Email</label>
+        <input id="email" type="email"><span class="error" id="e_email"></span></div>
+
+      <div class="box"><label for="phone">Phone</label>
+        <input id="phone" type="tel"><span class="error" id="e_phone"></span></div>
+
+      <div class="box"><label for="dob">Date of Birth</label>
+        <input id="dob" type="date"><span class="error" id="e_dob"></span></div>
+
+      <div class="box"><label for="dept">Department</label>
+        <select id="dept">
+          <option value="">-- Select --</option>
+          <option>CSE</option><option>EEE</option><option>BBA</option><option>English</option>
+        </select><span class="error" id="e_dept"></span></div>
+
+      <div class="box"><fieldset style="border:0">
+        <legend>Gender</legend>
+        <div class="radios">
+          <label><input type="radio" name="g" value="Male"> Male</label>
+          <label><input type="radio" name="g" value="Female"> Female</label>
+          <label><input type="radio" name="g" value="Other"> Other</label>
+        </div></fieldset><span class="error" id="e_g"></span></div>
+
+      <div class="box"><label for="pass">Password</label>
+        <input id="pass" type="password"><span class="error" id="e_pass"></span></div>
+
+      <button type="submit">Register</button>
+    </form>
+  </section>
+
+  <section id="records">
+    <h3>Submitted Data</h3>
+    <div class="scroll">
+      <table id="t" hidden>
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>DOB</th><th>Dept</th><th>Gender</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer>&copy; 2026 KYAU | Web Engineering Lab</footer>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  $("f").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const v = {
+      name: $("name").value.trim(), email: $("email").value.trim(),
+      phone: $("phone").value.trim(), dob: $("dob").value,
+      dept: $("dept").value, pass: $("pass").value,
+      g: document.querySelector('input[name="g"]:checked')
+    };
+    const err = {
+      name:  v.name  ? "" : "Full name is required.",
+      email: !v.email ? "Email is required." : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email) ? "Enter a valid email." : "",
+      phone: v.phone ? "" : "Phone is required.",
+      dob:   v.dob   ? "" : "Date of birth is required.",
+      dept:  v.dept  ? "" : "Select a department.",
+      g:     v.g     ? "" : "Select a gender.",
+      pass:  !v.pass ? "Password is required." : v.pass.length < 8 ? "Minimum 8 characters." : ""
+    };
+    let ok = true;
+    for (const k in err) { $("e_" + k).textContent = err[k]; if (err[k]) ok = false; }
+    if (!ok) return;
+
+    const row = $("t").tBodies[0].insertRow();
+    [v.name, v.email, v.phone, v.dob, v.dept, v.g.value].forEach(x => row.insertCell().textContent = x);
+    $("t").hidden = false;
+    this.reset();
+  });
+</script>
+</body>
+</html>
